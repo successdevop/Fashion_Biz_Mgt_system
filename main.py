@@ -34,12 +34,13 @@
 #         return f"Congratulations {name}, you are eligible"
 #     else:
 #         return f"Sorry {name}, you are not allowed to use this API at this age"
+from operator import add
 
 # if __name__ == "__main__":
 #     app.run()
 
 from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 engine = create_engine("sqlite:///test.db")
 Base = declarative_base()
@@ -52,3 +53,14 @@ class Employee(Base):
     position = Column(String)
 
 Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
+session.commit()
+
+query = session.get(Employee, 5)
+session.delete(query)
+session.commit()
+
+# query = session.query(Employee).filter(Employee.id>1)
+# for emp in query:
+#     print(emp.name, emp.position)
