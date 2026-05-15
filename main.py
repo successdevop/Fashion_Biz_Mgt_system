@@ -39,8 +39,8 @@ from operator import add
 # if __name__ == "__main__":
 #     app.run()
 
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 engine = create_engine("sqlite:///test.db")
 Base = declarative_base()
@@ -52,14 +52,30 @@ class Employee(Base):
     name = Column(String)
     position = Column(String)
 
+class Projects(Base):
+    __tablename__ = "projects"
+    id = Column(Integer, primary_key=True)
+    emp_id = Column(Integer, ForeignKey("employee.id"))
+    name = Column(String)
+    employee = relationship("Employee", back_populates="projects")
+
+Employee.projects = relationship("Projects", back_populates="employee")
+
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 session.commit()
 
-query = session.get(Employee, 5)
-session.delete(query)
+query = session.get(Employee, 1)
+query.projects = [Projects(name="Python for intermediate"), Projects(name="Master class for founders")]
+
+session.add(query)
 session.commit()
+
+
+# query = session.get(Employee, 5)
+# session.delete(query)
+# session.commit()
 
 # query = session.query(Employee).filter(Employee.id>1)
 # for emp in query:
