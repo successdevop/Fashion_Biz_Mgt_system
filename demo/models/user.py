@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String
 from demo import db
 
 
-class UserSchema(db.Model):
+class UserModel(db.Model):
     __tablename__ = "users"
     user_id = Column(Integer, primary_key=True)
     first_name = Column(String, nullable=False)
