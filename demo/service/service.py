@@ -10,38 +10,6 @@ class Services:
     def __init__(self, database):
         self.db = database
 
-    def get_countries(self):
-        countries = CountryModel.query.all()
-        if not countries:
-            return jsonify({"message":"No countries found"}), 404
-
-        return jsonify(countries_schema.dump(countries)), 200
-
-
-    def get_users(self):
-        users = UserModel.query.all()
-        if not users:
-            return jsonify(({"message":"No users found"})), 404
-
-        return jsonify(users_schema.dump(users)), 200
-
-
-    def get_user(self, user_id: int):
-        user = UserModel.query.get(user_id)
-        if not user:
-            return jsonify({"Error":f"user with id {user_id} not found"}), 404
-
-        return jsonify(user_schema.dump(user)), 200
-
-
-    def get_country(self, country_id: int):
-        country = CountryModel.query.get(country_id)
-        if not country:
-            return jsonify(({"error":f"country with id {country_id} not found"})), 404
-
-        return jsonify(country_schema.dump(country)), 200
-
-
     def delete_user(self, user_id: int):
         user = UserModel.query.filter_by(user_id=user_id).first()
         if not user:
@@ -101,6 +69,7 @@ class Services:
 
         return jsonify({"message":f"country with id {user_id} updated successfully"}), 201
 
+
     def create_user(self):
         try:
             if request.is_json:
@@ -122,10 +91,72 @@ class Services:
             self.db.session.add(new_user)
             self.db.commit()
 
+            return jsonify({"message":"user created successfully"}), 201
+        except Exception as e:
+            self.db.rollback()
+            print(f"Error occurred | {e}]")
+
+
+    def add_country(self):
+        try:
+            if request.is_json:
+                data = request.get_json()
+                country_name = data.get("country_name")
+                country_capital = data.get("country_capital")
+                country_population = data.get("country_population")
+            else:
+                country_name = request.form.get("country_name")
+                country_capital = request.form.get("country_capital")
+                country_population = request.form.get("country_population")
+
+            if CountryModel.query.filter_by(country_name=country_name).first():
+                return jsonify({"message":"country already exists"})
+
+            new_country = CountryModel(country_name=country_name, country_capital=country_capital,
+                                       country_population=country_population)
+            self.db.session.add(new_country)
+            self.db.commit()
+
             return jsonify({"message":"country created successfully"}), 201
         except Exception as e:
             self.db.rollback()
             print(f"Error occurred | {e}]")
+
+
+    @staticmethod
+    def get_countries():
+        countries = CountryModel.query.all()
+        if not countries:
+            return jsonify({"message":"No countries found"}), 404
+
+        return jsonify(countries_schema.dump(countries)), 200
+
+
+    @staticmethod
+    def get_users():
+        users = UserModel.query.all()
+        if not users:
+            return jsonify(({"message":"No users found"})), 404
+
+        return jsonify(users_schema.dump(users)), 200
+
+
+    @staticmethod
+    def get_user(user_id: int):
+        user = UserModel.query.get(user_id)
+        if not user:
+            return jsonify({"Error":f"user with id {user_id} not found"}), 404
+
+        return jsonify(user_schema.dump(user)), 200
+
+
+    @staticmethod
+    def get_country(country_id: int):
+        country = CountryModel.query.get(country_id)
+        if not country:
+            return jsonify(({"error":f"country with id {country_id} not found"})), 404
+
+        return jsonify(country_schema.dump(country)), 200
 
 
 

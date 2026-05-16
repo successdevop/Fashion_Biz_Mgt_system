@@ -1,9 +1,14 @@
+from flask import jsonify
 from demo import app
 from demo.service.service import Services
 
 class DemoController:
     def __init__(self, service: Services):
         self.service = service
+
+    @app.route("/")
+    def home(self):
+        return jsonify({"message": "Welcome To Fashion Business Management System API"})
 
     @app.route("/users", methods=['GET'])
     def get_all_users(self):

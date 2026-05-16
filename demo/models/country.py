@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float
-from demo import db
+from demo.repository.repo import db
 
 
 class CountryModel(db.Model):
