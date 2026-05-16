@@ -1,8 +1,7 @@
 from demo import app
 from demo.models.user import UserModel
 from demo.models.country import CountryModel
-from demo.repository.repo import db
-
+from demo import db
 
 @app.cli.command("create_db")
 def create_db():

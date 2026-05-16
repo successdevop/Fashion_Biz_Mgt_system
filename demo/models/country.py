@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float
-from demo.repository.repo import db
-
+from demo import db
 
 class CountryModel(db.Model):
     __tablename__ = "countries"
