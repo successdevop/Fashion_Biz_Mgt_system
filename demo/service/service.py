@@ -4,6 +4,7 @@ from demo.models.country import CountryModel
 from demo.models.user import UserModel
 from demo.schemas.country import countries_schema, country_schema
 from demo.schemas.user import users_schema, user_schema
+from werkzeug.security import generate_password_hash
 
 
 class Services:
@@ -87,13 +88,15 @@ class Services:
             if UserModel.query.filter_by(email=email).first():
                 return jsonify({"message":"user already exists"})
 
-            new_user = UserModel(first_name=first_name, last_name=last_name, email=email, password=password)
+            hashed_password = generate_password_hash(password=password)
+
+            new_user = UserModel(first_name=first_name, last_name=last_name, email=email, password=hashed_password)
             self.db.session.add(new_user)
-            self.db.commit()
+            self.db.session.commit()
 
             return jsonify({"message":"user created successfully"}), 201
         except Exception as e:
-            self.db.rollback()
+            self.db.session.rollback()
             print(f"Error occurred | {e}]")
 
 
@@ -157,11 +160,3 @@ class Services:
             return jsonify(({"error":f"country with id {country_id} not found"})), 404
 
         return jsonify(country_schema.dump(country)), 200
-
-
-
-
-
-
-
-

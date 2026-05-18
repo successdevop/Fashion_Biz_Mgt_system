@@ -1,7 +1,7 @@
 from flask import jsonify
 from demo import app
 from demo.service.service import Services
-from demo import db
+from demo import db, auth
 
 
 service = Services(database=db)
@@ -10,6 +10,7 @@ def home():
     return jsonify({"message": "Welcome To Fashion Business Management System API"})
 
 @app.route("/users", methods=['GET'])
+@auth.login_required()
 def get_all_users():
     return service.get_users()
 
