@@ -2,6 +2,7 @@ from flask import jsonify
 from demo import app
 from demo.service.service import Services
 from demo import db, auth
+from flask_jwt_extended import jwt_required
 
 
 service = Services(database=db)
@@ -15,6 +16,7 @@ def get_all_users():
     return service.get_users()
 
 @app.route("/countries", methods=['GET'])
+@jwt_required()
 def get_all_countries():
     return service.get_countries()
 
